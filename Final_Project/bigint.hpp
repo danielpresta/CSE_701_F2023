@@ -4,85 +4,190 @@
 #include <string>
 using namespace std;
 
+/**
+ * @brief A class for arbitrary-precision integers, called `big_int`. It takes signed 64-bit integers or
+ * and strings of digits (with a possible negative sign at the beginning) as constructors, and has several
+ * member functions that overload boolean and arithmetic operators. * 
+ */
 class big_int {
 public:
 
     ///// CONSTRUCTORS /////
 
-    // Default constructor that creates the integer 0
+    /**
+     * @brief Default constructor that creates the integer 0
+     */
     big_int();
 
-    // Constructor that takes a signed 64-bit integer and converts it to big_int
+    /**
+     * @brief Constructor that takes a signed 64-bit integer and converts it to big_int
+     * 
+     * @param _value The signed 64-bit integer, given as a constant reference.
+     */
     big_int(const int64_t &_value);
 
-    // Constructor that takes a string of digits and converts to big_int
+    /**
+     * @brief Constructor that takes a string of digits and converts it to big_int.
+     *
+     * @param num_string The input string, given as constant reference.
+     */
     big_int(const string &num_string);
 
-    // Overload == operator to check for equivalence between big_int values
+    /**
+     * @brief Overload == operator to check for equivalence between big_int numbers.
+     *
+     * @param rhs The big_int object to compare our original big_int object to.
+     * @return true if the two big_int numbers are equal.
+     * @return false if the two big_int numbers are not equal.
+     */
     bool operator==(big_int &rhs);
 
-    // Overload != operator to see if two big_int values are not equal.
+    /**
+     * @brief Overload != operator to see if two big_int numbers are not equal.
+     *
+     * @param rhs The big_int object to compare our original big_int object to.
+     * @return true if the two big_int numbers are not equal.
+     * @return false if the two big_int numbers are equal.
+     */
     bool operator!=(big_int &rhs);
 
-    // Overload <= operator to see if one big_int value is less than or equal to another big_int value.
+    /**
+     * @brief Overload <= operator to see if one big_int number is less than or equal to another big_int number.
+     *
+     * @param rhs The big_int object to compare our original big_int object to.
+     * @return true if the initial big_int number is less than or equal to rhs.
+     * @return false if the initial big_int number is greater than rhs.
+     */
     bool operator<=(big_int &rhs);
 
-    // Overload < operator to see if one big_int value is less than another big_int value.
+    /**
+     * @brief Overload < operator to see if one big_int number is less than another big_int number.
+     *
+     * @param rhs The big_int object to compare our original big_int object to.
+     * @return true if the initial big_int number is less than rhs.
+     * @return false if the initial big_int number is greater than or equal to rhs.
+     */
     bool operator<(big_int &rhs);
 
-    // Overload > operator to see if one big_int value is greater than another big_int value.
+    /**
+     * @brief Overload > operator to see if one big_int number is greater than another big_int number.
+     *
+     * @param rhs The big_int object to compare our original big_int object to.
+     * @return true if the initial big_int number is greater than rhs.
+     * @return false if the initial big_int number is less than or equal to rhs.
+     */
     bool operator>(big_int &rhs);
 
-    // Overload >= operator to see if one big_int value is greater than or equal to another big_int value.
+    /**
+     * @brief Overload >= operator to see if one big_int number is greater than or equal to another big_int number.
+     *
+     * @param rhs The big_int object to compare our original big_int object to.
+     * @return true if the initial big_int number is greater than or equal to rhs.
+     * @return false if the initial big_int number is less than rhs.
+     */
     bool operator>=(big_int &rhs);
 
-    // Overload the assignment operator (=) to assign one value of big_int to another big_int object.
+    /**
+     * @brief Overload the assignment operator (=) to assign one value of big_int to another big_int object.
+     *
+     * @param rhs The big_int object whose value will be assigned.
+     * @return big_int& The big_int object to which the value of rhs will be assigned.
+     */
     big_int& operator=(const big_int &rhs);
 
-    // Overload negation operator (-) to return the negative of a big_int value.
+    /**
+     * @brief Overload negation operator (-) to return the negative of a big_int number.
+     *
+     * @return big_int& The negative of a big_int number.
+     */
     big_int& operator-();
 
-    // Overload compound addition operator (+=) to return the value of big_int after another big_int value is added to it.
+    /**
+     * @brief Overload compound addition operator (+=), thus adding a big_int number to an initial big_int number.
+     *
+     * @param rhs The big_int number that is to be added.
+     * @return big_int& The sum of the initial big_int and rhs, updating the initial big_int value.
+     */
     big_int& operator+=(big_int &rhs);
 
-    // Overload addition operator to obtain the sum of two numbers.
+    /**
+     * @brief Overload addition operator (+) to obtain the sum of two big_int numbers.
+     *
+     * @param rhs The second big_int number that is to be added.
+     * @return big_int& The sum of the initial big_int and rhs.
+     */
     big_int &operator+(big_int &rhs);
 
-    // Overload compound subtraction operator (-=) to return the value of big_int after another big_int value is subtracted from it.
+    /**
+     * @brief Overload compound subtraction operator (-=), thus subtracting a big_int number from an initial 
+     * big_int number.
+     *
+     * @param rhs The big_int number that is to be subtracted.
+     * @return big_int& The difference between the initial big_int and rhs, updating the initial big_int value.
+     */
     big_int &operator-=(big_int &rhs);
 
-    // Overload subtraction operator to obtain the difference of two big_int values.
+    /**
+     * @brief Overload subtraction operator (-) to obtain the difference of two big_int numbers.
+     *
+     * @param rhs The big_int number that is to be subtracted.
+     * @return big_int& The difference between the initial big_int and rhs.
+     */
     big_int &operator-(big_int &rhs);
 
-    // Overload compound multiplication operator (*=) to return the value of big_int after another big_int value is multiplied to it.
+    /**
+     * @brief Overload compound multiplication operator (*=), thus multiplying a big_int number with another 
+     * big_int number.
+     *
+     * @param rhs The big_int number that is to be multiplied.
+     * @return big_int& The product of the initial big_int and rhs, updating the initial big_int value.
+     */
     big_int &operator*=(big_int &rhs);
 
-    // Overload multiplication operator to obtain the product of two big_int values.
+    /**
+     * @brief Overload multiplication operator (*) to obtain the product of two big_int numbers.
+     *
+     * @param rhs The second big_int number that is to be multiplied.
+     * @return big_int& The product of the initial big_int and rhs.
+     */
     big_int &operator*(big_int &rhs);
 
-    // Setter function to change or intialize the big_int string.
-    // In addition, we ensure proper format of string using this function.
+    /**
+     * @brief Setter function to change or intialize the big_int string.
+     * In addition, we ensure proper format of string using this function.
+     *
+     * @param num_string constant reference to string is accepted.
+     */
     void set_big_int(const string &num_string);
 
-    // Friend function to print the big integer to an output stream.
+    /**
+     * @brief Friend function to print the big_int number to an output stream.
+     *
+     * @param out The stream to which the big_int object will be inserted.
+     * @param x The big_int object.
+     * @return ostream& Reference to the output stream.
+     */
     friend ostream &operator<<(ostream &out, const big_int &x);
 
 private:
-    // Value is stored as a string; operations implemented character by character
+    /**
+     * @brief Data is stored as a string; operations implemented character by character.
+     *
+     */
     string value;
 };
 
-// Default constructor
+// Default constructor.
 big_int::big_int() {
     set_big_int("0");
 }
 
-// Constructor to convert signed 64-bit int to big_int
+// Constructor to convert signed 64-bit int to big_int.
 big_int::big_int(const int64_t &_value) {
     set_big_int(to_string(_value));
 }
 
-// Constructor that takes big_int as a string
+// Constructor that takes big_int as a string.
 big_int::big_int(const string &num_string) {
     set_big_int(num_string);
 }

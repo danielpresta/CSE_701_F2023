@@ -28,7 +28,7 @@ int main() {
     cout << (num11 * num12) << "\n";
     num12 = num2;
     cout << num12 << "\n";
-    big_int num13("10000000000000000000000");
+    big_int num13("40000000000000000000000");
     big_int num14("3000000000000000000000");
     cout << (num13 * num14) << "\n";
 }

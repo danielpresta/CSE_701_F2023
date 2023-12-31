@@ -6,9 +6,9 @@
             "label": "C/C++: gcc.exe build active file",
             "command": "C:\\Users\\User\\Documents\\mingw64\\bin\\g++.exe",
             "args": [
-                "${file}",
+                "${workspaceFolder}\\*.cpp",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${workspaceFolder}\\CSE_701.exe",
                 "-Wall",
                 "-Wextra",
                 "-Wconversion",
