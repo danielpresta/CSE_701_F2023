@@ -42,7 +42,7 @@ public:
     // Overload negation operator (-) to return the negative of a big_int value.
     big_int& operator-();
 
-    // Overload compound addition operator (+=) to return the value of big_int after a another big_int value is added to it.
+    // Overload compound addition operator (+=) to return the value of big_int after another big_int value is added to it.
     big_int& operator+=(big_int &rhs);
 
     // Overload addition operator to obtain the sum of two numbers.
@@ -51,8 +51,14 @@ public:
     // Overload compound subtraction operator (-=) to return the value of big_int after another big_int value is subtracted from it.
     big_int &operator-=(big_int &rhs);
 
-    // Overload subtraction operator to obtain the difference of two numbers.
+    // Overload subtraction operator to obtain the difference of two big_int values.
     big_int &operator-(big_int &rhs);
+
+    // Overload compound multiplication operator (*=) to return the value of big_int after another big_int value is multiplied to it.
+    big_int &operator*=(big_int &rhs);
+
+    // Overload multiplication operator to obtain the product of two big_int values.
+    big_int &operator*(big_int &rhs);
 
     // Setter function to change or intialize the big_int string.
     // In addition, we ensure proper format of string using this function.
@@ -288,7 +294,7 @@ big_int& big_int::operator+=(big_int &rhs){
     big_int temp_val = value;
     big_int temp_rhs = rhs.value;
 
-    // First ensure that we are dealing with the absolute values of the big_int numbers.
+    // Ensure that we are dealing with the absolute values of the big_int numbers.
     // We will deal with signs at the end.
 
     // If the original big_int is negative, convert to a positive using the overloaded negation operator.
@@ -367,7 +373,7 @@ big_int& big_int::operator+=(big_int &rhs){
     // Initialize a string to which we will append each of the subtracted digits:
     string diff_result = "";
 
-    // Initialize a variable to keep track of the sum of two digits at each iteration of the for loop.
+    // Initialize a variable to keep track of the difference of two digits at each iteration of the for loop.
     int digit_diff = 0;
 
     // Initialize a variable to keep track of the borrow
@@ -456,7 +462,7 @@ big_int& big_int::operator+=(big_int &rhs){
         }
     }
 
-    // Set the value equal to the final_result string.
+    // Set the original big_int equal to the final_result string, and return the original, modified big_int value!
     value = final_result;
     return *this;
 }
@@ -479,29 +485,118 @@ big_int &big_int::operator-(big_int &rhs)
     return *this -= rhs;
 }
 
+// Overload compound multiplication operator (*=):
+big_int &big_int::operator*=(big_int &rhs)
+{
+    // First, let's define temporary variables temp_val and temp_rhs, as we did for addition.
+    big_int temp_val = value;
+    big_int temp_rhs = rhs.value;
+
+    // Ensure that we are dealing with the absolute values of the big_int numbers.
+    // We will deal with signs at the end.
+
+    // If the original big_int is negative, convert to a positive using the overloaded negation operator.
+    if (value[0] == '-')
+    {
+        temp_val = -temp_val;
+    }
+    else
+    {
+        temp_val = temp_val;
+    }
+
+    // If the big_int "rhs" is negative, similarly convert to a positive value.
+    if (rhs.value[0] == '-')
+    {
+        temp_rhs = -temp_rhs;
+    }
+    else
+    {
+        temp_rhs = temp_rhs;
+    }
+
+    // Reverse the temporary strings in order to multiplication from least digit to greatest digit
+    // i.e. from ones column. to tens column, to hundreds column, and so on...
+    reverse(temp_val.value.begin(), temp_val.value.end());
+    reverse(temp_rhs.value.begin(), temp_rhs.value.end());
+
+    // Initialize a string to which we will append each of the multiplied digits:
+    string prod_result = "";
+
+    // Initialize a variable to keep track of the product of two digits at each iteration of the for loop.
+    int digit_prod = 0;
+
+    // First we initialize a for loop to perform multiplication by each digit column in temp_val
+    for (size_t i = 0; i < temp_val.value.size(); i++) {
+        // Initialize a variable to keep track of the carry to the next digit column
+        // This is done inside the first for loop but outside the second for loop.
+        // We do this to reset the carry after one digit column in the first big_int has been multiplied by ALL digits
+        // in the second big_int. This resets the carry back to 0.
+        int carry_prod = 0;
+
+
+        // We need a second for loop to multiplication by each digit column in temp_rhs
+        for (size_t j = 0; j < temp_rhs.value.size(); j++) {
+            digit_prod = (temp_val.value[i] - '0') * (temp_rhs.value[j] - '0') + carry_prod;
+
+            // We must keep track of the digits that already exist.
+            // If a number is already in that digit column, the product must be added to that column.
+            if ((i + j) < prod_result.size()) {
+                digit_prod += (prod_result[i + j] - '0');
+                
+                // The ones column of the digit product is then added to the existing column.
+                // The tens column of the digit product is carried over to the next column.
+                prod_result[i + j] = static_cast<char>(digit_prod % 10 + '0');
+            }
+            // If a number is not already in the digit column, it means that we are increasing the product by a factor of 10.
+            // So we append the digit product to the back of the product result string.
+            else {
+                prod_result.push_back(static_cast<char>(digit_prod % 10 + '0'));
+            }
+
+            // We then update the carry (the tens column of the digit product).
+            carry_prod = digit_prod / 10;
+        }
+
+        // If there is a carry left over after the final digit multiplication,
+        // Then it is appended to the back of the product result string.
+        if (carry_prod > 0) {
+            prod_result.push_back(static_cast<char>(carry_prod + '0'));
+        }
+    }
+
+    // Reverse the sum_result string, so that the sum can be read from left to right.
+    reverse(prod_result.begin(), prod_result.end());
+
+    // Initialize a final result string.
+    // This will consider taking the negative of a value, based on the sign of the inputs.
+    string final_result;
+
+    // Now consider the different cases (positive or negative) of our two big_ints.
+    // This will determine whether to introduce a negative sign to our final answer.
+
+    // If both big_ints are positive, or both big_ints are negative, then take the positive of the result.
+    if ((value[0] != '-' && rhs.value[0] != '-') || (value[0] == '-' && rhs.value[0] == '-'))
+    {
+        final_result = prod_result;
+    }
+    // If the big_ints have different signs, then take the negative of the result. 
+    else {
+        final_result = prod_result.insert(0, "-");
+    }
+
+    // Set the original big_int equal to the final_result string, and return the original, modified big_int value!
+    value = final_result;
+    return *this;
+}
+
+// Overload multiplication operator (*):
+big_int &big_int::operator*(big_int &rhs)
+{
+    return *this *= rhs;
+}
+
 // Friend function to print the big_int value to an output stream.
 ostream& operator<<(ostream& out, const big_int& x) {
     return out << x.value;
-}
-
-int main() {
-    big_int num1;
-    cout << num1 << "\n";
-    big_int num2(185);
-    cout << num2 << "\n";
-    big_int num3("-18");
-    cout << num3 << "\n";
-    big_int num4("185");
-    cout << num4 << "\n";
-    cout << (num2 < num4) << "\n";
-    cout << -num4 << "\n";
-    big_int num5(-185);
-    big_int num7("-279");
-    num5 += num7;
-    cout << num5 << "\n";
-    cout << (num2 + num3) << "\n";
-    big_int num8(9);
-    num7 -= num8;
-    big_int num9("-91");
-    cout << (num7 - num9) << "\n";
 }
