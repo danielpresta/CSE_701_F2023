@@ -71,7 +71,6 @@ int main() {
     num2 -= num4;
     cout << num2 << '\n';
 
-    cout << num7 << '\n';
     num7 *= num1;
     cout << num7 << '\n';
     num8 *= num5;
@@ -91,7 +90,7 @@ int main() {
     // Test arithmetic operators for BIG INTEGERS!
     big_int num11("1891238953829384892845");
     big_int num12("-4892093485901894893209284");
-    big_int num13("-4892093485901894893209284");
+    big_int num13("-893847928349087277893987899987");
     cout << (num11 + num12 - num12) << '\n';
     cout << (num12 - num13 + num13) << '\n';
     big_int num14("40000000000000000000000");

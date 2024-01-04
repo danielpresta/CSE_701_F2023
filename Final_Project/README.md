@@ -194,7 +194,7 @@ private:
 
 In order to introduce class invariants and preserve encapsulation, we introduce the setter function `set_big_int()`. The function will enable proper initialization of arbitrary-precision integers through the aforementioned constructors. It accepts the constant string parameter `num_string` as a reference, and will ensure that the parameter satisfies certain criteria to be accepted as valid data for the `big_int` class.
 
-The setter function first checks to see if the user inputted an empty string, which is not a valid numeric input. If this is the case, the following exception is thrown (using the `<stdexcept>` header): `"Error: An empty string cannot be an input!"`. The next invalid input that `set_big_int()` looks for is a sole negative sign that is not followed by any numbers. If this is the case, the exception `"Error: A string cannot only contain a negative sign! It must be followed by at least one digit."` is thrown. Lastly, the setter function determines if non-numeric characters exist in the string, excluding a possible initial negative sign. If the `find_first_not_of()` method finds any character other than a digit from 0 to 9 among the non-negative sign characters, the following exception is thrown: `"Error: String contains characters other than numeric digits, or a possible leading negative sign!"`.
+The setter function first checks to see if the user inputted an empty string, which is not a valid numeric input. If this is the case, the following exception is thrown (using the `<stdexcept>` header): `"An empty string cannot be an input!"`. The next invalid input that `set_big_int()` looks for is a sole negative sign that is not followed by any numbers. If this is the case, the exception `"A string cannot only contain a negative sign! It must be followed by at least one digit."` is thrown. Lastly, the setter function determines if non-numeric characters exist in the string, excluding a possible initial negative sign. If the `find_first_not_of()` method finds any character other than a digit from 0 to 9 among the non-negative sign characters, the following exception is thrown: `"String contains characters other than numeric digits, or a possible leading negative sign!"`.
 
 If all invariants are respected, the setter function assigns the input parameter `num_string` to the private data member `value`. This is to say, the value of the arbitrary-precision integer will be equal to the inputted string if all invariants are preserved. The code for `set_big_int()` is provided below.
 
@@ -203,11 +203,11 @@ If all invariants are respected, the setter function assigns the input parameter
 void big_int::set_big_int(const string &num_string){
     // First check to see if string is empty.
     if (num_string.empty())
-        throw invalid_argument("Error: An empty string cannot be an input!");
+        throw invalid_argument("An empty string cannot be an input!");
 
     // Then check the condition that the user inputted only a negative sign.
     if (num_string[0] == '-' && num_string.size() == 1)
-        throw invalid_argument("Error: A string cannot only contain a negative sign! It must be followed by at least one digit.");
+        throw invalid_argument("A string cannot only contain a negative sign! It must be followed by at least one digit.");
 
     // Then check if there are non-numeric characters in the string of length two or greater.
     // NOTE: The first character is permitted to be a negative sign ('-').
@@ -222,7 +222,7 @@ void big_int::set_big_int(const string &num_string){
 
     // Now check for non-numeric characters after a potential negative sign.
     if (num_string.find_first_not_of("0123456789", starting_index) != string::npos)
-        throw invalid_argument("Error: String contains characters other than numeric digits, or a possible leading negative sign!");
+        throw invalid_argument("String contains characters other than numeric digits, or a possible leading negative sign!");
 
     value = num_string;
 }
@@ -333,7 +333,7 @@ We then use the overloaded `==` operator when overloading the `!=` operator to c
 ```cpp
 // Overload the != operator to check if two big_int values are not equal.
 bool big_int::operator!=(big_int& rhs) {
-    return !(value == rhs.value);
+    return !(*this == rhs);
 }
 ```
 
@@ -872,4 +872,294 @@ ostream& operator<<(ostream& out, const big_int& x) {
 
 ## Demonstration of the capabilities of the `big_int` class
 
-Consulting the demo file `"demo.cpp"`, we can observe and test the full capabilities of the `big_int` class.
+Consulting the demo file `"demo.cpp"`, we can observe and test the full capabilities of the `big_int` class. We begin by defining the following arbitrary-precision integers:
+
+1. The integer `0` using the default constructor.
+2. The integer `185` using the constructor that converts a signed 64-bit integer to an arbitrary-precision integer (i.e. the second constructor).
+3. The integer `-238` using the constructor that takes a string and converts it to an arbitrary-precision integer (i.e. the third constructor).
+4. The integer `192` using the third constructor.
+5. The integer `-591` using the second constructor.
+6. The integer `927` using the third constructor.
+7. The integer `348` using the third constructor.
+8. The integer `00000348` using the third constructor.
+
+We then attempt to define two invalid arbitrary-precision integers in a `try-catch` block:
+
+9. The string `38s5@29`, which should return the following: `Error: String contains characters other than numeric digits, or a possible leading negative sign!`.
+10. The string `-`, which should return the following: `Error: A string cannot only contain a negative sign! It must be followed by at least one digit.`.
+
+This is the output of the first 10 tests:
+
+```
+0
+185
+-238
+192
+-591
+927
+348
+00000348
+Error: String contains characters other than numeric digits, or a possible leading negative sign!
+Error: A string cannot only contain a negative sign! It must be followed by at least one digit.
+```
+
+Our next seven tests are concerned with the comparison operators:
+
+11. We test if the integer `185` is strictly less than `-238` (should return `0`).
+12. We test if the integer `185` is less than or equal to `192` (should return `1`).
+13. We test if the integer `-238` is strictly greater than `-591` (should return `1`).
+14. We test if the integer `-238` is greater than or equal to `927` (should return `0`).
+15. We test if the integer `348` is less than or equal to `00000348` (should return `1`).
+16. We test if the integer `348` is equal to `00000348` (should return `1`).
+17. We test if the integer `348` is *not* equal to `00000348` (should return `0`).
+
+Indeed, this is the output of tests 11 through 17:
+
+```
+0
+1
+1
+0
+1
+1
+0
+```
+
+Our next five tests examine the assignment operator `=` and the unary negation operator `-`:
+
+18. We assign the value of the second `big_int` object (`185`) to the first `big_int` object (previously `0`). This should return `185`.
+19. We negate the value of the first `big_int` object (should return `-185`).
+20. We negate the value of the fifth `big_int` object (should return `591`).
+21. We negate the value of the first `big_int` object once more (should return `185`).
+22. We negate the value of the fifth `big_int` object once more (should return `-591`).
+
+This is the output of tests 18 through 22:
+
+```
+185
+-185
+591
+185
+-591
+```
+
+Next, we test our compound arithmetic operators. For the arithmetic operators, we will first show examples on three digit numbers, as the mathematics is easily verifiable on a calculator. A few examples using massive integers will be shown later.
+
+23. We add-and-assign the fourth `big_int` value to the second `big_int` value. This is equivalent to adding $185 + 192$, and should return `377`.
+24. We add-and-assign the fourth `big_int` value to the third `big_int` value. This is equivalent to adding $-238 + 192$, and should return `-046`, as the hundreds placeholder will no longer be used after the subtraction is performed.
+25. We add-and-assign the third `big_int` value to the first `big_int` value. This is equivalent to adding $185 + (-46)$, and should return `139`.
+26. We add-and-assign the first `big_int` value to the fifth `big_int` value. This is equivalent to adding $-591 + 139$, and should return `-452`.
+27. We subtract-and-assign the first `big_int` value from the fifth `big_int` value. This is equivalent to subtracting $-452 - 139$ or adding $-452 + (-139)$, and should return `-591`.
+28. We subtract-and-assign the third `big_int` value from the first `big_int` value. This is equivalent to subtracting $139 - (-46)$ or adding $139 + 46$, and should return `185`.
+29. We subtract-and-assign the fourth `big_int` value from the third `big_int` value. This is equivalent to subtracting $-46 - 192$ or adding $-46 + (-192)$, and should return `-238`.
+30. We subtract-and-assign the fourth `big_int` value from the second `big_int` value. This is equivalent to subtracting $377 - 192$ or adding $377 + (-192)$, and should return `185`.
+31. We multiply-and-assign the first `big_int` value to the seventh `big_int` value. This is equivalent to multiplying $348 \ast 185$, and should return `64380`.
+32. We multiply-and-assign the fifth `big_int` value to the eighth `big_int` value. This is equivalent to multiplying $348 \ast (-591)$ with four leading zeros, and should return `-0000205668`.
+33. We multiply-and-assign the thrid `big_int` value to the eighth `big_int` value. This is equivalent to multiplying $-205668 \ast (-238)$ with four leading zeros, and should return `-000048948984`.
+
+We observe the output of tests 23 through 33 below:
+
+```
+377
+-046
+139
+-452
+-591
+185
+-238
+185
+64380
+-0000205668
+000048948984
+```
+
+Next, we test our arithmetic operators. As mentioned earlier, there was an error in the process of overloading these operators, and they essentially function the same as the overloaded *compound* arithmetic operators. We will still examine a few tests, however:
+
+34. We add the value of the fourth `big_int` object to the value of the second `big_int` object, and then subtract the value of the fourth `big_int` object from the resulting sum. This is equivalent to the expression $185 + 192 - 192$, and should return `185`.
+35. We subtract the value of the fourth `big_int` object from the value of the third `big_int` object, and then add the value of the fourth `big_int` object to the resulting difference. This is equivalent to the expression $-238 - 192 + 192$, and should return `-238`.
+36. We add the value of the third `big_int` object to the value of the first `big_int` object, and then subtract the value of the third `big_int` object from the resulting sum. This is equivalent to the expression $185 + (-238) - (-238)$, and should return `185`.
+37. We subtract the value of the first `big_int` object from the value of the fifth `big_int` object, and then add the value of the first `big_int` object to the resulting difference. This is equivalent to the expression $-591 - 185 + 185$, and should return `-591`.
+38. We multiply the value of the sixth `big_int` object with the value of the second `big_int` object. This is equivalent to the expression $927 \ast 185$, and should return `171495`.
+39. We multiply the value of the fifth `big_int` object with the value of the fourth `big_int` object. This is equivalent to the expression $-591 \ast 192$, and should return `-113472`.
+40. We multiply the value of the third `big_int` object with itself. This is equivalent to the expression $-238 \ast -238$, and should return `56644`.
+
+The output of tests 34 through 40 is featured below:
+
+```
+185
+-238
+185
+-591
+171495
+-113472
+56644
+```
+
+Lastly, we define a few very large arbitrary-precision integers and run a few tests on those integers.
+
+41. We define the integer `1891238953829384892845` using the third constructor (11th `big_int` object), but do not display it!
+42. We define the integer `-4892093485901894893209284` using the third constructor (12th `big_int` object), but do not display it!
+43. We define the integer `-893847928349087277893987899987` using the third constructor (13th `big_int` object), but do not display it!
+44. We add the value of the 12th `big_int` object to the value of the 11th `big_int` object, and subtract the value of the 12th `big_int` object from the resulting sum. This is equivalent to $1891238953829384892845 + (-4892093485901894893209284) - (-4892093485901894893209284)$, and should return `1891238953829384892845` after the leading zeros.
+45. We subtract the value of the 13th `big_int` object from the value of the 12th `big_int` object, and add the value of the 13th `big_int` object to the resulting sum. This is equivalent to $-4892093485901894893209284 - (-893847928349087277893987899987) + (-893847928349087277893987899987)$, and should return `-4892093485901894893209284` (with five leading zeros).
+46. We define the integers `40000000000000000000000` and `3000000000000000000000` (14th and 15th `big_int` objects, respectively) using the third constructor. We refrain from printing these integers, and instead immediately multiply them together. This is equivalent to $40000000000000000000000 \ast 3000000000000000000000$, and should return `120000000000000000000000000000000000000000000`.
+
+The output of tests 41 through 46 are displayed below:
+
+```
+0001891238953829384892845
+-000004892093485901894893209284
+120000000000000000000000000000000000000000000
+```
+
+The full output can be viewed below:
+
+```
+0
+185
+-238
+192
+-591
+927
+348
+00000348
+Error: String contains characters other than numeric digits, or a possible leading negative sign!
+Error: A string cannot only contain a negative sign! It must be followed by at least one digit.
+0
+1
+1
+0
+1
+1
+0
+185
+-185
+591
+185
+-591
+377
+-046
+139
+-452
+-591
+185
+-238
+185
+64380
+-0000205668
+000048948984
+185
+-238
+185
+-591
+171495
+-113472
+56644
+0001891238953829384892845
+-000004892093485901894893209284
+120000000000000000000000000000000000000000000
+```
+
+Lastly, the demo code is given below as well:
+
+```cpp
+#include "bigint.hpp"
+
+int main() {
+    // Initialize different arbitrary-precision integers:
+    big_int num1;
+    cout << num1 << '\n';
+    big_int num2(185);
+    cout << num2 << '\n';
+    big_int num3("-238");
+    cout << num3 << '\n';
+    big_int num4("192");
+    cout << num4 << '\n';
+    big_int num5(-591);
+    cout << num5 << '\n';
+    big_int num6("927");
+    cout << num6 << '\n';
+    big_int num7("348");
+    cout << num7 << '\n';
+    big_int num8("00000348");
+    cout << num8 << '\n';
+    try {
+        big_int num9("38s5@29");
+        cout << num9 << '\n';
+    }
+    catch (const exception &e) {
+        cout << "Error: " << e.what() << '\n';
+    }
+    try
+    {
+        big_int num10("-");
+        cout << num10 << '\n';
+    }
+    catch (const exception &e)
+    {
+        cout << "Error: " << e.what() << '\n';
+    }
+
+    // Test comparison operators:
+    cout << (num2 < num3) << '\n';
+    cout << (num2 <= num4) << '\n';
+    cout << (num3 > num5) << '\n';
+    cout << (num3 >= num6) << '\n';
+    cout << (num7 <= num8) << '\n';
+    cout << (num7 == num8) << '\n';
+    cout << (num7 != num8) << '\n';
+
+    // Test assignment and negation operators:
+    num1 = num2;
+    cout << num1 << '\n';
+    cout << -num1 << '\n';
+    cout << -num5 << '\n';
+    cout << -num1 << '\n';
+    cout << -num5 << '\n';
+
+    // Test compound arithmetic operators:
+    num2 += num4;
+    cout << num2 << '\n';
+    num3 += num4;
+    cout << num3 << '\n';
+    num1 += num3;
+    cout << num1 << '\n';
+    num5 += num1;
+    cout << num5 << '\n';
+
+    num5 -= num1;
+    cout << num5 << '\n';
+    num1 -= num3;
+    cout << num1 << '\n';
+    num3 -= num4;
+    cout << num3 << '\n';
+    num2 -= num4;
+    cout << num2 << '\n';
+
+    num7 *= num1;
+    cout << num7 << '\n';
+    num8 *= num5;
+    cout << num8 << '\n';
+    num8 *= num3;
+    cout << num8 << '\n';
+
+    // Test arithmetic operators
+    cout << (num2 + num4 - num4) << '\n';
+    cout << (num3 - num4 + num4) << '\n';
+    cout << (num1 + num3 - num3) << '\n';
+    cout << (num5 - num1 + num1) << '\n';
+    cout << (num6 * num2) << '\n';
+    cout << (num5 * num4) << '\n';
+    cout << (num3 * num3) << '\n';
+
+    // Test arithmetic operators for BIG INTEGERS!
+    big_int num11("1891238953829384892845");
+    big_int num12("-4892093485901894893209284");
+    big_int num13("-893847928349087277893987899987");
+    cout << (num11 + num12 - num12) << '\n';
+    cout << (num12 - num13 + num13) << '\n';
+    big_int num14("40000000000000000000000");
+    big_int num15("3000000000000000000000");
+    cout << (num14 * num15) << '\n';
+}
+```

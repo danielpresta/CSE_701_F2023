@@ -279,7 +279,7 @@ bool big_int::operator==(big_int& rhs) {
 
 // Overload the != operator to check if two big_int values are not equal.
 bool big_int::operator!=(big_int& rhs) {
-    return !(value == rhs.value);
+    return !(*this == rhs);
 }
 
 // Overload the <= operator to check if one big_int value is less than or equal to another one.
